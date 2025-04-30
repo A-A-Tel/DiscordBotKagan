@@ -2,10 +2,14 @@ package com.anthony.discordKagan;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.jetbrains.annotations.NotNull;
 
 public class Main extends ListenerAdapter {
 
@@ -24,9 +28,15 @@ public class Main extends ListenerAdapter {
 
     /// Begin app listener ///
 
+
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-
+    public void onReady(@NotNull ReadyEvent event) {
+        for (Guild guild : jda.getGuilds()) {
+            for (MessageChannel channel : guild.getTextChannels()) {
+                if (channel.getId().equals("1306668416916000839")) {
+                    channel.sendMessage("Hello Bot!").queue();
+                }
+            }
+        }
     }
-
 }
