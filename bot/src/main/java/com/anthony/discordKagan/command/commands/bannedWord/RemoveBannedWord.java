@@ -1,4 +1,4 @@
-package com.anthony.discordKagan.command.commands;
+package com.anthony.discordKagan.command.commands.bannedWord;
 
 import com.anthony.discordKagan.Main;
 import com.anthony.discordKagan.command.ICommand;
@@ -8,28 +8,25 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-public class Sql implements ICommand {
-
-
+public class RemoveBannedWord implements ICommand {
     @Override
     public String getName() {
-        return "query";
+        return "remove-banned-word";
     }
 
     @Override
     public String getDescription() {
-        return "directly query the database";
+        return "Use /get-banned-words to get banned words and their IDs";
     }
 
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "sql", "query", true, false)
+                new OptionData(OptionType.INTEGER, "id", "The id of the banned word to remove", true, true)
         );
     }
 
@@ -41,23 +38,27 @@ public class Sql implements ICommand {
     @Override
     public void execute(SlashCommandInteractionEvent event) {
 
-        String reply = "Failure";
-        OptionMapping option = event.getOption("sql");
+        String reply;
+        OptionMapping idOption = event.getOption("id");
 
-        if (option != null) {
-            String query = option.getAsString();
-            if (!query.isBlank()) {
-                try (Statement stmt = Main.sql.createStatement()) {
+        if (idOption == null) {
+            reply = "Critical error: id=NULL";
 
-                    ResultSet rs = stmt.executeQuery(query);
+        } else {
+            int id = idOption.getAsInt();
 
-                    reply = rs.toString();
+            try (Statement stmt = Main.sql.createStatement()) {
 
-                } catch (SQLException e) {
-                    reply = "Fatal Error: " + e.getMessage();
-                }
+                String sql = "DELETE FROM banned_words WHERE id = " + id;
+                stmt.executeUpdate(sql);
+
+                reply = "Banned word at " + id + " removed.";
+
+            } catch (SQLException e) {
+                reply = "Fatal error: " + e.getMessage();
             }
         }
+
         event.reply(reply).queue();
     }
 }

@@ -1,19 +1,26 @@
 package com.anthony.discordKagan.command;
 
 import com.anthony.discordKagan.Main;
+import com.anthony.discordKagan.command.commands.*;
+import com.anthony.discordKagan.command.commands.bannedWord.AddBannedWord;
+import com.anthony.discordKagan.command.commands.bannedWord.GetBannedWords;
+import com.anthony.discordKagan.command.commands.bannedWord.RemoveBannedWord;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CommandManager {
 
-    private final ArrayList<ICommand> commands = new ArrayList<>();
+    private static final List<ICommand> commands = List.of(
+            new Kill(),
+            new ReloadCommands(),
+            new GetBannedWords(),
+            new AddBannedWord(),
+            new RemoveBannedWord()
+    );
 
-    public void add(ICommand command) {
-        commands.add(command);
-    }
 
-    public void loadCommands() {
+    public static void loadCommands() {
         for (ICommand command : commands) {
             Main.guild.upsertCommand(command.getName(), command.getDescription())
                     .addOptions(command.getOptions())
@@ -22,7 +29,7 @@ public class CommandManager {
         }
     }
 
-    public void executeCommand(SlashCommandInteractionEvent event) {
+    public static void executeCommand(SlashCommandInteractionEvent event) {
         String name = event.getName();
 
         for (ICommand command : commands) {

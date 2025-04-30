@@ -1,8 +1,6 @@
 package com.anthony.discordKagan;
 
 import com.anthony.discordKagan.command.CommandManager;
-import com.anthony.discordKagan.command.commands.Kill;
-import com.anthony.discordKagan.command.commands.Sql;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -55,8 +53,6 @@ public class Main extends ListenerAdapter {
 
     /// Begin app listener ///
 
-    public CommandManager command = new CommandManager();
-
     @Override
     public void onReady(@NotNull ReadyEvent event) {
 
@@ -81,15 +77,11 @@ public class Main extends ListenerAdapter {
             throw new IllegalStateException("No guild found");
         }
 
-        command.add(new Kill());
-        command.add(new Sql());
-        command.loadCommands();
-
-
+        CommandManager.loadCommands();
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        command.executeCommand(event);
+        CommandManager.executeCommand(event);
     }
 }
