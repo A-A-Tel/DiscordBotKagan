@@ -1,17 +1,20 @@
 FROM alpine:latest
 
-ENV JAVA_HOME=/opt/java/jdk
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+FROM alpine:latest
 
-RUN apk add --no-cache curl bash wget ca-certificates
+# Install dependencies
+RUN apk add --no-cache bash curl wget ca-certificates
 
-RUN mkdir -p /opt/java && \
-    cd /opt/java && \
-    wget https://download.java.net/java/GA/jdk23/36/GPL/openjdk-23_linux-x64_bin.tar.gz && \
-    tar -xzf openjdk-23_linux-x64_bin.tar.gz && \
-    rm openjdk-23_linux-x64_bin.tar.gz && \
-    mv jdk-23* jdk
+# Install Eclipse Temurin JDK 23
+# Set working environment
+ENV JAVA_HOME=/opt/java
+ENV PATH=$JAVA_HOME/bin:$PATH
 
+# Install Eclipse Temurin JDK 23 using the AdoptOpenJDK Alpine package
+RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community openjdk23 || \
+    (echo "OpenJDK 23 not available in Alpine repositories yet, installing JDK 21 instead" && \
+    apk add --no-cache openjdk21 && \
+    ln -s /usr/lib/jvm/java-21-openjdk /opt/java)
 
 CMD ["chmod", "+x", "/usr/src/bot/gradlew"]
 CMD ["/usr/src/bot/gradlew", "run"]
