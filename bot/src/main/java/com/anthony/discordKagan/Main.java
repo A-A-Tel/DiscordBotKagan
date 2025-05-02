@@ -1,11 +1,15 @@
 package com.anthony.discordKagan;
 
 import com.anthony.discordKagan.command.CommandManager;
+import com.anthony.discordKagan.flag.FlagManager;
+import com.anthony.discordKagan.message.Filter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -20,7 +24,7 @@ import java.util.TimeZone;
 
 public class Main extends ListenerAdapter {
 
-    public static Connection sql;
+    public static final Connection sql;
 
     static {
         try {
@@ -37,7 +41,7 @@ public class Main extends ListenerAdapter {
         }
     }
 
-    public static JDA jda = JDABuilder.createDefault(System.getenv("BOT_TOKEN"))
+    public static final JDA jda = JDABuilder.createDefault(System.getenv("BOT_TOKEN"))
             .setMemberCachePolicy(MemberCachePolicy.ALL)
             .enableIntents(
                     GatewayIntent.GUILD_MEMBERS,
@@ -62,7 +66,7 @@ public class Main extends ListenerAdapter {
 
         for (Guild guild : jda.getGuilds()) {
             for (MessageChannel channel : guild.getTextChannels()) {
-                if (channel.getId().equals("1306668416916000839")) {
+                if (channel.getId().equals("1367977916864004186")) {
                     Main.guild = guild;
                     channel.sendMessage(
                             "Bot compiled and run at: " + builder
@@ -77,11 +81,25 @@ public class Main extends ListenerAdapter {
             throw new IllegalStateException("No guild found");
         }
 
+        FlagManager.loadFlags();
+        Filter.loadBannedWords();
         CommandManager.loadCommands();
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         CommandManager.executeCommand(event);
+    }
+
+    @Override
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+
+        Message message = event.getMessage();
+
+        if (message.getAuthor().isBot()) return;
+
+        if (FlagManager.getFlag("chat_filter")) {
+            Filter.filterMessage(message);
+        }
     }
 }

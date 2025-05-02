@@ -2,6 +2,7 @@ package com.anthony.discordKagan.command.commands.bannedWord;
 
 import com.anthony.discordKagan.Main;
 import com.anthony.discordKagan.command.ICommand;
+import com.anthony.discordKagan.message.Filter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -26,7 +27,7 @@ public class RemoveBannedWord implements ICommand {
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.INTEGER, "id", "The id of the banned word to remove", true, true)
+                new OptionData(OptionType.INTEGER, "id", "The id of the banned word to remove", true, false)
         );
     }
 
@@ -51,6 +52,7 @@ public class RemoveBannedWord implements ICommand {
 
                 String sql = "DELETE FROM banned_words WHERE id = " + id;
                 stmt.executeUpdate(sql);
+                Filter.loadBannedWords();
 
                 reply = "Banned word at " + id + " removed.";
 
