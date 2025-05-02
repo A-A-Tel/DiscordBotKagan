@@ -27,7 +27,7 @@ public class FlagManager {
                 } while (resultSet.next());
             }
 
-        } catch (SQLException _) {}
+        } catch (SQLException e) {}
     }
 
     private static void addFlag(String flag) {
@@ -36,7 +36,7 @@ public class FlagManager {
         try (Statement stmt = Main.sql.createStatement()) {
             stmt.execute(sql);
             flags.put(flag, false);
-        } catch (SQLException _) {}
+        } catch (SQLException e) {}
     }
 
     public static boolean getFlag(String flag) {

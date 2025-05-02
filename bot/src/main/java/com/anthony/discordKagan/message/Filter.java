@@ -135,7 +135,7 @@ public class Filter {
             }
             bannedWords = words;
 
-        } catch (SQLException _) {
+        } catch (SQLException e) {
             bannedWords = List.of();
         }
     }
