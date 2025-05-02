@@ -1,5 +1,5 @@
 FROM alpine:latest
 
-RUN chmod +x ./gradlew
+RUN chmod +x /usr/src/bot/gradlew
 
 CMD ["/usr/src/bot/gradlew", "run"]

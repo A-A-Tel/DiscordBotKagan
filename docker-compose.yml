@@ -1,15 +1,19 @@
 services:
   bot:
-    build: ./bot
+    image: alpine:latest
+    build:
+      context: ./bot
     restart: always
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
+      - DB_HOST=DB
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - BOT_TOKEN=${BOT_TOKEN}
     depends_on:
       - db
+    volumes:
+      - ./bot:/usr/src/bot
 
   db:
     image: mysql:latest
@@ -22,4 +26,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - bot_data:/var/lib/mysql
+
+volumes:
+  bot_data:
