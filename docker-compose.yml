@@ -1,23 +1,25 @@
 services:
-  bot:
-    image: alpine:latest
-    build:
-      context: ./bot
-    restart: always
-    environment:
-      - DB_HOST=DB
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - BOT_TOKEN=${BOT_TOKEN}
-    depends_on:
-      - db
-    volumes:
-      - ./bot:/usr/src/bot
+#  bot:
+#    image: alpine:latest
+#    build:
+#      context: ./bot
+#    restart: always
+#    environment:
+#      - DB_HOST=DB
+#      - DB_NAME=${DB_NAME}
+#      - DB_USER=${DB_USER}
+#      - DB_PASS=${DB_PASS}
+#      - BOT_TOKEN=${BOT_TOKEN}
+#    depends_on:
+#      - db
+#    volumes:
+#      - ./bot:/usr/src/bot
 
   db:
     image: mysql:latest
     restart: always
+    build:
+      context: ./db/
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -27,6 +29,7 @@ services:
       - "3306:3306"
     volumes:
       - bot_data:/var/lib/mysql
+      - ./db/init.sql:/var/init.sql
 
 volumes:
   bot_data:

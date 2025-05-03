@@ -1,7 +1,5 @@
 FROM alpine:latest
 
-FROM alpine:latest
-
 # Install dependencies
 RUN apk add --no-cache bash curl wget ca-certificates
 
