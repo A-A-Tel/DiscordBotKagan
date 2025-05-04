@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -19,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.TimeZone;
 
 public class Main extends ListenerAdapter {
 
@@ -37,7 +34,7 @@ public class Main extends ListenerAdapter {
             String url = "jdbc:mysql://" + host + ":" + port + "/" + name;
             sql = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -56,27 +53,10 @@ public class Main extends ListenerAdapter {
     }
 
     /// Begin app listener ///
-
     @Override
     public void onReady(@NotNull ReadyEvent event) {
 
-        StringBuilder builder = new StringBuilder(LocalDateTime.now(TimeZone.getTimeZone("Europe/Amsterdam").toZoneId()).toString());
-        builder.replace(10, 11, " ");
-        builder.replace(16, builder.length(), "");
-
-        for (Guild guild : jda.getGuilds()) {
-            for (MessageChannel channel : guild.getTextChannels()) {
-                if (channel.getId().equals("1367977916864004186")) {
-                    Main.guild = guild;
-                    channel.sendMessage(
-                            "Bot compiled and run at: " + builder
-                            + "\nDatabase Connection: " + sql
-                            + "\nGuild: " + guild.getName() + " (" + guild.getId() + ")"
-                            + "\n"
-                    ).queue();
-                }
-            }
-        }
+        Main.guild = jda.getGuildById(System.getenv("GUILD_ID"));
         if (Main.guild == null) {
             throw new IllegalStateException("No guild found");
         }

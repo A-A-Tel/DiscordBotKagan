@@ -2,7 +2,6 @@ package com.anthony.discordKagan.flag;
 
 import com.anthony.discordKagan.Main;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;

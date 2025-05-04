@@ -41,9 +41,9 @@ public class GetFlags implements ICommand {
 
         try (Statement statement = Main.sql.createStatement()) {
 
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM flags");
+            ResultSet rs = statement.executeQuery("SELECT * FROM flags");
 
-            if (!resultSet.next()) {
+            if (!rs.next()) {
                 reply = "No flags found.";
             } else {
 
@@ -51,11 +51,11 @@ public class GetFlags implements ICommand {
 
                 do {
                     builder.append("\n")
-                            .append(resultSet.getString("flag"))
+                            .append(rs.getString("flag"))
                             .append("     ")
-                            .append(resultSet.getBoolean("state"));
+                            .append(rs.getBoolean("state"));
 
-                } while (resultSet.next());
+                } while (rs.next());
                 reply = builder.toString();
             }
 
